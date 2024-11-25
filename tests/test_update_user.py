@@ -47,9 +47,12 @@ class TestUserUpdate:
         second_user_data = create_user_credentials()
         second_user_response = register_user(second_user_data)
         second_user_token = second_user_response.json().get("accessToken")
-        update_data = {"email": first_user_email}
-        response = update_user_data(second_user_token, update_data)
-        response_data = response.json()
-        assert (response.status_code == 403 and response_data["success"] is False and
-                response_data["message"] == "User with such email already exists")
-        delete_user(second_user_token)
+        try:
+            update_data = {"email": first_user_email}
+            response = update_user_data(second_user_token, update_data)
+            response_data = response.json()
+
+            assert (response.status_code == 403 and response_data["success"] is False and
+                    response_data["message"] == "User with such email already exists")
+        finally:
+            delete_user(second_user_token)
